@@ -43,4 +43,4 @@ end
 
 gem 'dotenv-rails', groups: [:development, :test]
 gem "bcrypt", "~> 3.1"
-gem "jwt", "~> 3.0"
+gem "jwt", "~> 3.1"
