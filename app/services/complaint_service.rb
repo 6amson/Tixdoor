@@ -215,7 +215,6 @@ class ComplaintService
 
   def self.delete_comment(comment_id, user)
     comment = ComplaintComment.find_by(id: comment_id)
-
     raise HttpError.new("Comment not found", status: HttpStatus::NOT_FOUND) unless comment
 
     unless comment.complaint.user_id.to_i == user.id.to_i || user.user_type == USER_TYPES[:admin]
