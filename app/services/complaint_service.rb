@@ -41,10 +41,6 @@ class ComplaintService
     if complaint.save
       begin
         ComplaintNotificationService.notify_admins_of(complaint)
-        # { success: true, complaint: complaint }
-        # rescue => e
-        #   Rails.logger.error("❌ Notification failed for complaint ##{complaint.id}: #{e.message}")
-        #   Rails.logger.error(e.backtrace.join("\n"))
         { success: true, complaint: complaint }
       end
     else

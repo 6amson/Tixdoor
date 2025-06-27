@@ -17,7 +17,7 @@ class UserService
 
   def self.signup(params)
     # Validate user type
-    unless params[:user_type].in?([ USER_TYPES[:regular], USER_TYPES[:admin] ])
+    unless params[:user_type].in?([USER_TYPES[:regular], USER_TYPES[:admin]])
       raise HttpError.new(
         "Invalid user type. Must be 'regular' or 'admin'.",
         status: HttpStatus::BAD_REQUEST,
@@ -92,14 +92,14 @@ class UserService
       success: true,
       user: user,
       complaints: paginated.as_json(include: {
-                                      user: { only: [ :email ] },
-                                      complaint_comments: { only: [ :id, :comment, :user_type, :created_at ] }
+                                      user: { only: [:email] },
+                                      complaint_comments: { only: [:id, :comment, :user_type, :created_at] },
                                     }),
       pagination: {
         current_page: paginated.current_page,
         total_pages: paginated.total_pages,
-        total_count: paginated.total_count
-      }
+        total_count: paginated.total_count,
+      },
     }
   end
 
@@ -107,7 +107,7 @@ class UserService
     {
       complaint_types: COMPLAINT_TYPES.values.map(&:to_s),
       complaint_statuses: COMPLAINT_STATUSES.values.map(&:to_s),
-      user_types: USER_TYPES.values.map(&:to_s)
+      user_types: USER_TYPES.values.map(&:to_s),
     }
   end
 
@@ -117,7 +117,7 @@ class UserService
     payload = {
       user_id: user.id,
       jti: user.token_jti,
-      exp: 24.hours.from_now.to_i
+      exp: 24.hours.from_now.to_i,
     }
     JWT.encode(payload, Rails.application.secret_key_base, "HS256")
   end

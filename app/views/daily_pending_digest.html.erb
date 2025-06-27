@@ -1,0 +1,13 @@
+<h2>Hello <%= @admin.full_name %>,</h2>
+
+<p>Here is a summary of all pending complaints as of <%= Time.zone.now.strftime("%B %d, %Y %H:%M") %>:</p>
+
+<ul>
+  <% @complaints.each do |complaint| %>
+    <li>
+      <strong><%= complaint.title %></strong> — submitted by <%= complaint.user.full_name %> on <%= complaint.created_at.strftime("%B %d, %Y") %>
+    </li>
+  <% end %>
+</ul>
+
+<p>Visit the admin panel to take action.</p>
