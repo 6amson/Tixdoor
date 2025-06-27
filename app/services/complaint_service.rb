@@ -142,7 +142,6 @@ class ComplaintService
   end
 
   def self.update_status(complaint_id, new_status, user)
-    # Rails.logger.info("Updating complaint status: #{complaint_id} to #{new_status}")
     unless new_status.present? && COMPLAINT_STATUSES.key?(new_status.to_sym)
       raise HttpError.new(
         "Invalid or missing status. Valid statuses are: #{COMPLAINT_STATUSES.keys.join(", ")}",
