@@ -3,7 +3,6 @@ class ComplaintComment < ApplicationRecord
   include CommentRules
 
   belongs_to :complaint
-  belongs_to :user
 
   enum user_type: USER_TYPES
 

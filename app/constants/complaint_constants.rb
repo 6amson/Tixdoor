@@ -1,9 +1,9 @@
 module ComplaintConstants
   COMPLAINT_TYPES = {
-    service_issue: "service_issue",
-    payment_issue: "payment_issue", 
-    technical_issue: "technical_issue",
-    content_issue: "content_issue",
+    service_issue: "service issue",
+    payment_issue: "payment issue",
+    technical_issue: "technical issue",
+    content_issue: "content issue",
     other: "other"
   }.freeze
 

@@ -30,6 +30,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_06_20_155039) do
 
   create_table "complaint_comments", force: :cascade do |t|
     t.bigint "complaint_id", null: false
+    t.string "user_email", null: false
     t.string "user_type", null: false
     t.text "comment", null: false
     t.datetime "created_at", null: false

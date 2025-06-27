@@ -41,6 +41,14 @@ group :development, :test do
 end
 
 
-gem 'dotenv-rails', groups: [:development, :test]
+gem "dotenv-rails", groups: [ :development, :test ]
 gem "bcrypt", "~> 3.1"
 gem "jwt", "~> 3.0"
+gem "kaminari"
+
+gem "graphql", "~> 2.5"
+gem "graphql-batch"
+gem "apollo_upload_server"
+gem "graphiql-rails", group: :development
+gem "cloudinary"
+gem "mailgun-ruby", require: "mailgun-ruby"

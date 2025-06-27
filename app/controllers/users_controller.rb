@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user, only: [:signout]
+  include UserAuthentication
+
+  before_action :authenticate_user, only: [ :profile, :signout ]
 
   def signup
     # Rails.logger.debug("Signup params: wowowowowowowo")
@@ -21,6 +23,21 @@ class UsersController < ApplicationController
     render json: result, status: :ok
   rescue HttpError => e
     render_error(e)
+  end
+
+   def profile
+    result = UserService.profile(
+      user: current_user,
+      page: params[:page] || 1,
+      per_page: params[:per_page] || 30
+    )
+    render json: result
+  rescue HttpError => e
+    render_error(e)
+  end
+
+    def get_all_enums
+    render json: UserService.get_all_enums, status: :ok
   end
 
   private

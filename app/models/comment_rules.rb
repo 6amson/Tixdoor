@@ -2,10 +2,9 @@ module CommentRules
   extend ActiveSupport::Concern
   include ComplaintConstants
 
-  enum userTypes: USER_TYPES
-
   included do
     validate :admin_comment_must_exist_before_user_comment, if: :requires_admin_comment?
+    validate :cannot_complain_after_resolve, if: :requires_admin_comment?
   end
 
   private
@@ -16,6 +15,18 @@ module CommentRules
 
   def admin_comment_must_exist_before_user_comment
     return if complaint.complaint_comments.where(user_type:  USER_TYPES[:admin]).exists?
-    errors.add(:base, "Admin comment is required before proceeding.")
+    raise HttpError.new(
+      "Admin comment is required before proceeding.",
+      status: HttpStatus::UNPROCESSABLE_ENTITY
+    )
+  end
+
+  def cannot_complain_after_resolve
+    return unless complaint.status == COMPLAINT_STATUSES[:resolved]
+
+    raise HttpError.new(
+      "You cannot add comments after the complaint has been resolved.",
+      status: HttpStatus::UNPROCESSABLE_ENTITY
+    )
   end
 end

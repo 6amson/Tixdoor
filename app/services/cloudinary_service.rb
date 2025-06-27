@@ -10,7 +10,7 @@ class CloudinaryService
         overwrite: true,
         resource_type: "image"
       )
-      result['secure_url']
+      result["secure_url"]
     rescue => e
       Rails.logger.error "Cloudinary upload failed: #{e.message}"
       raise HttpError.new("Failed to upload image to Cloudinary.", status: HttpStatus::BAD_REQUEST)
@@ -38,4 +38,3 @@ class CloudinaryService
     match[1] if match
   end
 end
-

@@ -1,9 +1,7 @@
 class User < ApplicationRecord
-
     has_secure_password
     include ComplaintConstants
 
-    enum user_type: USER_TYPES
     has_many :complaints, dependent: :destroy
     has_many :complaint_comments, dependent: :destroy
 

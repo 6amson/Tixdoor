@@ -1,0 +1,11 @@
+<p>Hello <%= @admin.full_name || @admin.email %>,</p>
+
+<p>A new complaint has been submitted:</p>
+
+<ul>
+    <li><strong>Title:</strong> <%= @complaint.title %></li>
+    <li><strong>Status:</strong> <%= @complaint.status %></li>
+    <li><strong>Submitted by:</strong> <%= @complaint.user.email %></li>
+</ul>
+
+<p>Log in to review it.</p>
