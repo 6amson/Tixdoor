@@ -1,7 +1,7 @@
 class AppSchema < GraphQL::Schema
   mutation(Types::MutationType)
   query(Types::QueryType)
-#   use ApolloUploadServer::Middleware
+  #   use ApolloUploadServer::Middleware
   # Enable batch loading
   use GraphQL::Batch
 

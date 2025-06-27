@@ -52,6 +52,5 @@ gem "apollo_upload_server"
 gem "graphiql-rails", group: :development
 gem "cloudinary"
 gem "mailgun-ruby", require: "mailgun-ruby"
-gem 'net-pop'
-gem 'net-protocol'
-
+gem "net-pop"
+gem "net-protocol"

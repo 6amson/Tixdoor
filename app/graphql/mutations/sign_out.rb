@@ -1,7 +1,7 @@
 module Mutations
   class SignOut < Mutations::BaseMutation
     argument :client_mutation_id, String, required: false
-    
+
     field :success, Boolean, null: false
     field :message, String, null: true
 
@@ -17,5 +17,3 @@ module Mutations
     end
   end
 end
-
-
