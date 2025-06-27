@@ -335,6 +335,8 @@ DEPENDENCIES
   jwt (~> 3.0)
   kaminari
   mailgun-ruby
+  net-pop
+  net-protocol
   pg (~> 1.1)
   puma (>= 5.0)
   rack-cors
