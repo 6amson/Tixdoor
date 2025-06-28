@@ -1,6 +1,6 @@
 module Mutations
   class ExportClosedComplaints < BaseMutation
-    description "Export closed complaints from last month as CSV"
+    description "Export all complaints from last month as CSV"
 
     # Return type
     field :csv_data, String, null: false
@@ -11,7 +11,7 @@ module Mutations
     def resolve
       begin
         csv_data = ComplaintExportService.closed_last_month_to_csv
-        filename = "closed_complaints_#{Date.current.strftime('%Y_%m_%d')}.csv"
+        filename = "complaints_#{Date.current.strftime('%Y_%m_%d')}.csv"
 
         {
           csv_data: csv_data,

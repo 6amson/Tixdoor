@@ -55,3 +55,15 @@ gem "mailgun-ruby", require: "mailgun-ruby"
 gem "net-pop"
 gem "net-protocol"
 gem 'rufus-scheduler'
+group :development, :test do
+  gem 'rspec-rails', '~> 6.0'
+  gem 'factory_bot_rails', '~> 6.2'
+  gem 'faker', '~> 3.0'
+end
+
+group :test do
+  gem 'database_cleaner-active_record', '~> 2.1'
+  gem 'webmock', '~> 3.18'
+  gem 'vcr', '~> 6.1'
+  gem 'shoulda-matchers', '~> 5.3'
+end

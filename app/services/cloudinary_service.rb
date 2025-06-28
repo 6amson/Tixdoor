@@ -34,7 +34,7 @@ class CloudinaryService
   private
 
   def self.extract_public_id(url)
-    match = url.match(/\/complaints\/(.+)\./)
-    match[1] if match
-  end
+  match = url.match(/\/upload\/(?:v\d+\/)?complaints\/(.+?)\./)
+  match[1] if match
+end
 end
