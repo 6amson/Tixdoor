@@ -6,8 +6,8 @@ A complete customer support platform that allows users to raise complaints and e
 
 ## 🔗 Live Deployments
 
-- **Backend (GraphQL API)**: [https://tixdoor-api.fly.dev](https://tixdoor-api.fly.dev)
-- **Frontend (Next.js UI)**: [https://tixdoor.vercel.app](https://tixdoor.vercel.app)
+- **Backend (GraphQL API)**: [https://tixdoor.onrender.com](https://tixdoor.onrender.com)
+- **Frontend (Next.js UI)**: [https://tixdoor-fe.vercel.app](https://tixdoor-fe.vercel.app)
 
 ---
 
