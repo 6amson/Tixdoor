@@ -1,17 +1,32 @@
 module Mutations
-  class ExportClosedComplaints < Mutations::BaseMutation
-    field :csv_base64, String, null: false
+  class ExportClosedComplaints < BaseMutation
+    description "Export closed complaints from last month as CSV"
+
+    # Return type
+    field :csv_data, String, null: false
+    field :filename, String, null: false
+    field :success, Boolean, null: false
+    field :message, String, null: true
 
     def resolve
-      user = context[:current_user]
-      unless user&.admin?
-        raise GraphQL::ExecutionError.new("Unauthorized", extensions: { code: 401 })
+      begin
+        csv_data = ComplaintExportService.closed_last_month_to_csv
+        filename = "closed_complaints_#{Date.current.strftime('%Y_%m_%d')}.csv"
+
+        {
+          csv_data: csv_data,
+          filename: filename,
+          success: true,
+          message: "CSV export generated successfully"
+        }
+      rescue StandardError => e
+        {
+          csv_data: "",
+          filename: "",
+          success: false,
+          message: "Export failed: #{e.message}"
+        }
       end
-
-      csv_data = ComplaintExportService.closed_last_month_to_csv
-      base64_encoded = Base64.strict_encode64(csv_data)
-
-      { csv_base64: base64_encoded }
     end
   end
 end

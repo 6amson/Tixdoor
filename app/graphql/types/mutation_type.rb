@@ -8,5 +8,6 @@ module Types
     field :update_complaint_status, mutation: Mutations::UpdateComplaintStatus
     field :delete_complaint, mutation: Mutations::DeleteComplaint
     field :delete_comment, mutation: Mutations::DeleteComment
+    field :export_closed_complaints, mutation: Mutations::ExportClosedComplaints
   end
 end
