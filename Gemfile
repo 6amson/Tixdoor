@@ -54,3 +54,4 @@ gem "cloudinary"
 gem "mailgun-ruby", require: "mailgun-ruby"
 gem "net-pop"
 gem "net-protocol"
+gem 'rufus-scheduler'
