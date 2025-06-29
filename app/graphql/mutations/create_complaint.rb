@@ -9,6 +9,7 @@ module Mutations
 
     def resolve(complaint_type:, complain:, attachment: nil)
       user = context[:current_user]
+      Rails.logger.info("EXCESSESS USER: #{user}")
       params = {
         complaint_type: complaint_type,
         user_id: user.id,
