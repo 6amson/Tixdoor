@@ -7,11 +7,11 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'https://tixdoor.vercel.app'
+    origins "https://tixdoor.vercel.app"
 
-    resource '*',
+    resource "*",
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      expose: ['Authorization']
+      expose: ["Authorization"]
   end
 end
