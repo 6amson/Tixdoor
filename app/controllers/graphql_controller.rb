@@ -1,56 +1,3 @@
-# # frozen_string_literal: true
-
-# class GraphqlController < ApplicationController
-#   # If accessing from outside this domain, nullify the session
-#   # This allows for outside API access while preventing CSRF attacks,
-#   # but you"ll have to authenticate your user separately
-#   # protect_from_forgery with: :null_session
-
-#   def execute
-#     variables = prepare_variables(params[:variables])
-#     query = params[:query]
-#     operation_name = params[:operationName]
-#     context = {
-#       # Query context goes here, for example:
-#       # current_user: current_user,
-#     }
-#     result = TixdoorSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
-#     render json: result
-#   rescue StandardError => e
-#     raise e unless Rails.env.development?
-#     handle_error_in_development(e)
-#   end
-
-#   private
-
-#   # Handle variables in form data, JSON body, or a blank value
-#   def prepare_variables(variables_param)
-#     case variables_param
-#     when String
-#       if variables_param.present?
-#         JSON.parse(variables_param) || {}
-#       else
-#         {}
-#       end
-#     when Hash
-#       variables_param
-#     when ActionController::Parameters
-#       variables_param.to_unsafe_hash # GraphQL-Ruby will validate name and type of incoming variables.
-#     when nil
-#       {}
-#     else
-#       raise ArgumentError, "Unexpected parameter: #{variables_param}"
-#     end
-#   end
-
-#   def handle_error_in_development(e)
-#     logger.error e.message
-#     logger.error e.backtrace.join("\n")
-
-#     render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
-#   end
-# end
-
 class GraphqlController < ApplicationController
   # Disable CSRF for GraphQL API
   # skip_before_action :verify_authenticity_token
@@ -79,35 +26,71 @@ class GraphqlController < ApplicationController
 
   # def current_user
   #   auth_header = request.headers["Authorization"]
-  #   # raise GraphQL::ExecutionError.new("Missing Authorization header", extensions: { status: 401 }) unless auth_header.present?
+  #   return nil unless auth_header.present?
 
   #   token = auth_header.split(" ").last
 
   #   begin
   #     payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
   #     user = User.find_by(id: payload["user_id"])
-
-  #     # raise GraphQL::ExecutionError.new("Invalid token", extensions: { status: 401 }) unless user && user.token_jti == payload["jti"]
-
-  #     user
-  #   rescue JWT::ExpiredSignature
-  #     raise GraphQL::ExecutionError.new("Token has expired", extensions: { status: 401 })
-  #   rescue JWT::DecodeError => e
-  #     raise GraphQL::ExecutionError.new("Invalid token: #{e.message}", extensions: { status: 401 })
+  #     user if user&.token_jti == payload["jti"]
+  #   rescue JWT::DecodeError, JWT::ExpiredSignature
+  #     nil
   #   end
   # end
 
+  # Add this to your GraphQL controller temporarily to debug
   def current_user
+    Rails.logger.info "=== Secret Key Base Debug ==="
+    Rails.logger.info "ENV SECRET_KEY_BASE present: #{ENV["SECRET_KEY_BASE"].present?}"
+    Rails.logger.info "ENV SECRET_KEY_BASE length: #{ENV["SECRET_KEY_BASE"]&.length}"
+    Rails.logger.info "Rails.application.secret_key_base present: #{Rails.application.secret_key_base.present?}"
+    Rails.logger.info "Rails.application.secret_key_base length: #{Rails.application.secret_key_base&.length}"
+    Rails.logger.info "Rails.application.credentials.secret_key_base present: #{Rails.application.credentials.secret_key_base.present?}"
+
+    # Check if they're the same
+    env_secret = ENV["SECRET_KEY_BASE"]
+    rails_secret = Rails.application.secret_key_base
+    Rails.logger.info "Secrets match: #{env_secret} : #{rails_secret}, #{env_secret == rails_secret}"
+
+    # Continue with your existing logic...
     auth_header = request.headers["Authorization"]
     return nil unless auth_header.present?
 
     token = auth_header.split(" ").last
 
     begin
-      payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
+      # Try with ENV secret first
+      if env_secret.present?
+        Rails.logger.info "Trying to decode with ENV SECRET_KEY_BASE"
+        payload = JWT.decode(token, env_secret, true, { algorithm: "HS256" }).first
+        Rails.logger.info "Successfully decoded with ENV secret"
+      else
+        Rails.logger.info "Trying to decode with Rails.application.secret_key_base"
+        payload = JWT.decode(token, rails_secret, true, { algorithm: "HS256" }).first
+        Rails.logger.info "Successfully decoded with Rails secret"
+      end
+
       user = User.find_by(id: payload["user_id"])
       user if user&.token_jti == payload["jti"]
-    rescue JWT::DecodeError, JWT::ExpiredSignature
+    rescue JWT::DecodeError => e
+      Rails.logger.error "JWT Decode Error: #{e.message}"
+
+      # Try with the other secret if available
+      begin
+        if env_secret.present? && env_secret != rails_secret
+          Rails.logger.info "Retrying with different secret"
+          payload = JWT.decode(token, rails_secret, true, { algorithm: "HS256" }).first
+          user = User.find_by(id: payload["user_id"])
+          return user if user&.token_jti == payload["jti"]
+        end
+      rescue => retry_error
+        Rails.logger.error "Retry also failed: #{retry_error.message}"
+      end
+
+      nil
+    rescue JWT::ExpiredSignature => e
+      Rails.logger.error "JWT Expired: #{e.message}"
       nil
     end
   end
