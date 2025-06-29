@@ -119,6 +119,6 @@ class UserService
       jti: user.token_jti,
       exp: 24.hours.from_now.to_i
     }
-    JWT.encode(payload, Rails.application.secret_key_base, "HS256")
+    JWT.encode(payload, ENV["SECRET_KEY_BASE"], "HS256")
   end
 end
