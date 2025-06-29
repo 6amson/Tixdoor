@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :user do
     email { Faker::Internet.unique.email }
-    password { 'securepass' } 
+    password { 'securepass' }
     user_type { 'regular' }
     token_jti { SecureRandom.uuid }
 

@@ -11,7 +11,7 @@ RSpec.describe ComplaintService, type: :integration do
         complaint_type: "payment_issue",
         user_id: regular_user.id,
         complain: "I was charged incorrectly",
-        attachment: nil,
+        attachment: nil
       }
 
       allow(ComplaintNotificationService).to receive(:notify_admins_of)
@@ -175,7 +175,7 @@ RSpec.describe ComplaintService, type: :integration do
         complaint_type: "payment_issue",
         user_id: regular_user.id,
         complain: "Test complaint",
-        attachment: attachment,
+        attachment: attachment
       }
 
       allow(CloudinaryService).to receive(:upload_image).and_return(nil)

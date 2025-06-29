@@ -10,7 +10,7 @@ RSpec.describe ComplaintService, type: :service do
       complaint_type: "technical_issue",
       user_id: regular_user.id,
       complain: "Test complaint",
-      attachment: nil,
+      attachment: nil
     }
   end
 
@@ -209,7 +209,7 @@ RSpec.describe ComplaintService, type: :service do
 
       ComplaintService.add_comment(complaint.id, admin_user, "Second admin comment")
 
-      expect(complaint.reload.status).to eq("pending") 
+      expect(complaint.reload.status).to eq("pending")
     end
 
     it "raises error when complaint not found" do
@@ -224,7 +224,7 @@ RSpec.describe ComplaintService, type: :service do
     it "raises error when comment save fails" do
       allow_any_instance_of(ComplaintComment).to receive(:save).and_return(false)
       allow_any_instance_of(ComplaintComment).to receive(:errors).and_return(
-        double(full_messages: ["Comment is required"])
+        double(full_messages: [ "Comment is required" ])
       )
 
       expect {

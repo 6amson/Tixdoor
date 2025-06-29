@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :complaint do
-    complaint_type { ['payment_issue', 'service_issue', 'technical_issue', 'other'].sample }
+    complaint_type { [ 'payment_issue', 'service_issue', 'technical_issue', 'other' ].sample }
     complain { Faker::Lorem.paragraph }
     status { 'pending' }
     attachment { nil }
