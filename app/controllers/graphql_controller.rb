@@ -39,64 +39,56 @@ class GraphqlController < ApplicationController
 
   # Add this to your GraphQL controller temporarily to debug
   def current_user
-    Rails.logger.info "=== Secret Key Base Debug ==="
-    Rails.logger.info "ENV SECRET_KEY_BASE present: #{ENV["SECRET_KEY_BASE"].present?}"
-    Rails.logger.info "ENV SECRET_KEY_BASE length: #{ENV["SECRET_KEY_BASE"]&.length}"
-    Rails.logger.info "Rails.application.secret_key_base present: #{Rails.application.secret_key_base.present?}"
-    Rails.logger.info "Rails.application.secret_key_base length: #{Rails.application.secret_key_base&.length}"
-    Rails.logger.info "Rails.application.credentials.secret_key_base present: #{Rails.application.credentials.secret_key_base.present?}"
+    Rails.logger.info "=== COMPREHENSIVE SECRET DEBUG ==="
 
-    # Check if they're the same
-    env_secret = ENV["SECRET_KEY_BASE"]
-    Rails.application.secret_key_base = ENV["SECRET_KEY_BASE"]
-    Rails.logger.info "Secrets match: #{env_secret} : #{rails_secret}, #{env_secret == rails_secret}"
+    # 1. Environment variables
+    Rails.logger.info "ENV['SECRET_KEY_BASE']: #{ENV["SECRET_KEY_BASE"]}"
+    Rails.logger.info "ENV['RAILS_MASTER_KEY']: #{ENV["RAILS_MASTER_KEY"]}"
 
-    # Continue with your existing logic...
+    # 2. All possible Rails secret sources
+    Rails.logger.info "Rails.application.credentials.secret_key_base: #{Rails.application.credentials.secret_key_base.inspect}"
+    Rails.logger.info "Rails.application.secrets.secret_key_base: #{Rails.application.secrets.secret_key_base.inspect}"
+    Rails.logger.info "Rails.application.secret_key_base: #{Rails.application.secret_key_base.inspect}"
+
+    # 3. Configuration values
+    Rails.logger.info "Rails.application.config.secret_key_base: #{Rails.application.config.secret_key_base.inspect}"
+
+    # 4. Check if there are any initializers setting this
+    Rails.logger.info "Rails.application.config.secret_token: #{Rails.application.config.secret_token.inspect}"
+
+    # 5. Check credentials config
+    Rails.logger.info "Rails.application.credentials.config.keys: #{Rails.application.credentials.config.keys}"
+
+    # 6. Check secrets config (if it exists)
+    begin
+      Rails.logger.info "Rails.application.secrets.inspect: #{Rails.application.secrets.inspect}"
+    rescue => e
+      Rails.logger.info "Secrets error: #{e.message}"
+    end
+
+    # 7. Check if master key is working
+    Rails.logger.info "Can decrypt credentials: #{Rails.application.credentials.config.present?}"
+
+    # 8. Environment info
+    Rails.logger.info "Rails.env: #{Rails.env}"
+    Rails.logger.info "Rails.application.class: #{Rails.application.class}"
+
+    # Continue with your existing auth logic...
     auth_header = request.headers["Authorization"]
     return nil unless auth_header.present?
 
     token = auth_header.split(" ").last
 
     begin
-      # Try with ENV secret first
-      if env_secret.present?
-        Rails.logger.info "Trying to decode with ENV SECRET_KEY_BASE"
-        payload = JWT.decode(token, env_secret, true, { algorithm: "HS256" }).first
-        Rails.logger.info "Successfully decoded with ENV secret"
-      else
-        Rails.logger.info "Trying to decode with Rails.application.secret_key_base"
-        payload = JWT.decode(token, rails_secret, true, { algorithm: "HS256" }).first
-        Rails.logger.info "Successfully decoded with Rails secret"
-      end
+      # For now, force use of ENV variable
+      secret = ENV["SECRET_KEY_BASE"]
+      Rails.logger.info "FORCING ENV secret: #{secret}"
 
+      payload = JWT.decode(token, secret, true, { algorithm: "HS256" }).first
       user = User.find_by(id: payload["user_id"])
       user if user&.token_jti == payload["jti"]
-    rescue JWT::DecodeError => e
-      Rails.logger.error "JWT Decode Error: #{e.message}"
-
-      # Try with the other secret if available
-      # begin
-      #   if env_secret.present? && env_secret != rails_secret
-      #     Rails.logger.info "Retrying with different secret"
-      #     # ENV['SECRET_KEY_BASE'] == Rails.application.secret_key_base
-      #     payload = JWT.decode(token, env_secret, true, { algorithm: "HS256" }).first
-      #     user = User.find_by(id: payload["user_id"])
-
-      #     #     begin
-      #     # decoded = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" })[0]
-      #     # @current_user = User.find(decoded["user_id"])
-
-      #     # if @current_user.token_jti != decoded["jti"]
-      #     #   render json: { error: "Token has been revoked", status: HttpStatus::UNAUTHORIZED }, status: :unauthorized
-      #     # end
-      #     return user if user&.token_jti == payload["jti"]
-      #   end
-      # rescue => retry_error
-      #   Rails.logger.error "Retry also failed: #{retry_error.message}"
-      # end
-      # nil
-    rescue JWT::ExpiredSignature => e
-      Rails.logger.error "JWT Expired: #{e.message}"
+    rescue JWT::DecodeError, JWT::ExpiredSignature => e
+      Rails.logger.error "JWT Error: #{e.message}"
       nil
     end
   end
