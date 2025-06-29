@@ -51,8 +51,6 @@
 #   end
 # end
 
-
-
 class GraphqlController < ApplicationController
   # Disable CSRF for GraphQL API
   # skip_before_action :verify_authenticity_token
@@ -63,8 +61,11 @@ class GraphqlController < ApplicationController
     operation_name = params[:operationName]
     context = {
       current_user: current_user,
-      request: request
+      request: request,
     }
+    Rails.logger.info "HEADERS: #{request.headers.env.select { |k, _| k.to_s.include?("HTTP_AUTHORIZATION") }}"
+    Rails.logger.info "Params: #{params.to_unsafe_h}"
+
     # Rails.logger.debug("SHUTT: #{context}")
     # raise GraphQL::ExecutionError.new("Unauthorized ooo", extensions: { status: 401 }) unless context[:current_user]
     result = AppSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
@@ -76,42 +77,40 @@ class GraphqlController < ApplicationController
 
   private
 
-# def current_user
-#   auth_header = request.headers["Authorization"]
-#   # raise GraphQL::ExecutionError.new("Missing Authorization header", extensions: { status: 401 }) unless auth_header.present?
+  # def current_user
+  #   auth_header = request.headers["Authorization"]
+  #   # raise GraphQL::ExecutionError.new("Missing Authorization header", extensions: { status: 401 }) unless auth_header.present?
 
-#   token = auth_header.split(" ").last
+  #   token = auth_header.split(" ").last
 
-#   begin
-#     payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
-#     user = User.find_by(id: payload["user_id"])
+  #   begin
+  #     payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
+  #     user = User.find_by(id: payload["user_id"])
 
-#     # raise GraphQL::ExecutionError.new("Invalid token", extensions: { status: 401 }) unless user && user.token_jti == payload["jti"]
+  #     # raise GraphQL::ExecutionError.new("Invalid token", extensions: { status: 401 }) unless user && user.token_jti == payload["jti"]
 
-#     user
-#   rescue JWT::ExpiredSignature
-#     raise GraphQL::ExecutionError.new("Token has expired", extensions: { status: 401 })
-#   rescue JWT::DecodeError => e
-#     raise GraphQL::ExecutionError.new("Invalid token: #{e.message}", extensions: { status: 401 })
-#   end
-# end
+  #     user
+  #   rescue JWT::ExpiredSignature
+  #     raise GraphQL::ExecutionError.new("Token has expired", extensions: { status: 401 })
+  #   rescue JWT::DecodeError => e
+  #     raise GraphQL::ExecutionError.new("Invalid token: #{e.message}", extensions: { status: 401 })
+  #   end
+  # end
 
-def current_user
-  auth_header = request.headers["Authorization"]
-  return nil unless auth_header.present?
+  def current_user
+    auth_header = request.headers["Authorization"]
+    return nil unless auth_header.present?
 
-  token = auth_header.split(" ").last
+    token = auth_header.split(" ").last
 
-  begin
-    payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
-    user = User.find_by(id: payload["user_id"])
-    user if user&.token_jti == payload["jti"]
-  rescue JWT::DecodeError, JWT::ExpiredSignature
-    nil
+    begin
+      payload = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" }).first
+      user = User.find_by(id: payload["user_id"])
+      user if user&.token_jti == payload["jti"]
+    rescue JWT::DecodeError, JWT::ExpiredSignature
+      nil
+    end
   end
-end
-
-
 
   def ensure_hash(ambiguous_param)
     case ambiguous_param
@@ -134,6 +133,6 @@ end
     logger.error e.message
     logger.error e.backtrace.join("\n")
 
-    render json: { errors: [ { message: e.message, backtrace: e.backtrace } ], data: {} }, status: 500
+    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
   end
 end
