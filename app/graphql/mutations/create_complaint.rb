@@ -20,7 +20,7 @@ module Mutations
       result = ComplaintService.create_complaint(params)
       {
         success: result[:success],
-        complaint: result[:complaint],
+        complaint: result[:complaint]
       }
     rescue HttpError => e
       GraphQL::ExecutionError.new(e.message)

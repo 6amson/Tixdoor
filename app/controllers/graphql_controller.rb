@@ -8,7 +8,7 @@ class GraphqlController < ApplicationController
     operation_name = params[:operationName]
     context = {
       current_user: current_user,
-      request: request,
+      request: request
     }
 
     # Rails.logger.debug("SHUTT: #{context}")
@@ -78,6 +78,6 @@ class GraphqlController < ApplicationController
     logger.error e.message
     logger.error e.backtrace.join("\n")
 
-    render json: { errors: [{ message: e.message, backtrace: e.backtrace }], data: {} }, status: 500
+    render json: { errors: [ { message: e.message, backtrace: e.backtrace } ], data: {} }, status: 500
   end
 end
