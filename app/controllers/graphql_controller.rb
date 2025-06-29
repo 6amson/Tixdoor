@@ -78,8 +78,16 @@ class GraphqlController < ApplicationController
       begin
         if env_secret.present? && env_secret != rails_secret
           Rails.logger.info "Retrying with different secret"
-          payload = JWT.decode(token, rails_secret, true, { algorithm: "HS256" }).first
+          payload = JWT.decode(token, env_secret, true, { algorithm: "HS256" }).first
           user = User.find_by(id: payload["user_id"])
+
+          #     begin
+          # decoded = JWT.decode(token, Rails.application.secret_key_base, true, { algorithm: "HS256" })[0]
+          # @current_user = User.find(decoded["user_id"])
+
+          # if @current_user.token_jti != decoded["jti"]
+          #   render json: { error: "Token has been revoked", status: HttpStatus::UNAUTHORIZED }, status: :unauthorized
+          # end
           return user if user&.token_jti == payload["jti"]
         end
       rescue => retry_error
