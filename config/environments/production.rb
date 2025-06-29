@@ -93,9 +93,8 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-  config.secret_key_base = ENV['SECRET_KEY_BASE'] if ENV['SECRET_KEY_BASE'].present?
-  
+  # config.secret_key_base = ENV["SECRET_KEY_BASE"] if ENV["SECRET_KEY_BASE"].present?
   # Add logging to verify
-  Rails.logger.info "Production secret_key_base source: #{ENV['SECRET_KEY_BASE'].present? ? 'ENV' : 'auto-generated'}"
+  Rails.logger.info "Production secret_key_base source: #{ENV["SECRET_KEY_BASE"].present? ? "ENV" : "auto-generated"}"
   config.hosts << "tixdoor.onrender.com"
 end
