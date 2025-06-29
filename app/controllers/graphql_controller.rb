@@ -10,8 +10,6 @@ class GraphqlController < ApplicationController
       current_user: current_user,
       request: request,
     }
-    Rails.logger.info "HEADERS: #{request.headers.env.select { |k, _| k.to_s.include?("HTTP_AUTHORIZATION") }}"
-    Rails.logger.info "Params: #{params.to_unsafe_h}"
 
     # Rails.logger.debug("SHUTT: #{context}")
     # raise GraphQL::ExecutionError.new("Unauthorized ooo", extensions: { status: 401 }) unless context[:current_user]
