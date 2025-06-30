@@ -56,7 +56,7 @@ gem "net-pop"
 gem "net-protocol"
 gem "rufus-scheduler"
 group :development, :test do
-  gem "rspec-rails", "~> 6.0"
+  gem "rspec-rails", "~> 8.0"
   gem "factory_bot_rails", "~> 6.2"
   gem "faker", "~> 3.0"
 end
