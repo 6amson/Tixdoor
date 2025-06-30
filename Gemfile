@@ -65,5 +65,5 @@ group :test do
   gem "database_cleaner-active_record", "~> 2.1"
   gem "webmock", "~> 3.18"
   gem "vcr", "~> 6.1"
-  gem "shoulda-matchers", "~> 5.3"
+  gem "shoulda-matchers", "~> 6.5"
 end
